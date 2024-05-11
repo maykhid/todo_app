@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
-import 'package:toad_app/app/shared/ui/app_button.dart';
+import 'package:toad_app/app/features/home/ui/cubit/home_cubit.dart';
 import 'package:toad_app/app/shared/ui/app_colors.dart';
 import 'package:toad_app/app/shared/ui/app_images.dart';
 
@@ -51,23 +52,68 @@ class HomeScreen extends StatelessWidget {
           Icons.add,
         ),
       ),
-      body: Column(
-        children: [
-          const AdWidget(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemBuilder: (context, index) => const Padding(
-                padding: EdgeInsets.only(top: 15),
-                child: TaskTile(),
-              ),
-              // separatorBuilder: (context, index) => const Gap(10),
-              itemCount: 3,
-            ),
-          ),
-        ],
+      body: BlocProvider(
+        create: (context) => HomeCubit()..getAllTasks(),
+        child: BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                const AdWidget(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: state.maybeMap(
+                    //error
+                    error: (message) => Message(message: message.errorMessage),
+
+                    // loaded
+                    loaded: (response) {
+                      final tasks = response.tasks.tasks;
+
+                      if (tasks.isEmpty) {
+                        return const Message(
+                          message:
+                              'You have no Tasks yet, click the FAB to add new tasks',
+                        );
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => const Padding(
+                          padding: EdgeInsets.only(top: 15),
+                          child: TaskTile(),
+                        ),
+                        // separatorBuilder: (context, index) => const Gap(10),
+                        itemCount: tasks.length,
+                      );
+                    },
+                    orElse: () {
+                      return Container();
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
+    );
+  }
+}
+
+class Message extends StatelessWidget {
+  const Message({
+    required this.message,
+    super.key,
+  });
+  final String message;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Gap(200),
+        Text(message),
+      ],
     );
   }
 }

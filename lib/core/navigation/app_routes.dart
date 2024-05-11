@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
-import 'package:toad_app/app/features/home/ui/add_task_screen.dart';
-import 'package:toad_app/app/features/home/ui/edit_task_screen.dart';
-import 'package:toad_app/app/features/home/ui/home_screen.dart';
+import 'package:toad_app/app/features/home/ui/views/screens/add_task_screen.dart';
+import 'package:toad_app/app/features/home/ui/views/screens/edit_task_screen.dart';
+import 'package:toad_app/app/features/home/ui/views/screens/home_screen.dart';
 
 class AppRoutes {
   static List<GoRoute> routes = [

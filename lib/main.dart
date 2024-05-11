@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:toad_app/app/app.dart';
+import 'package:toad_app/app/features/home/data/model/task.dart';
 import 'package:toad_app/core/di/di.dart';
 
 void main() async {
@@ -15,7 +16,7 @@ void main() async {
 setup() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-var path = '/assets/db';
+  var path = '/assets/db';
   // i test on web using developer tools mobile screens hence the check
   if (!kIsWeb) {
     final appDocDir = await getApplicationDocumentsDirectory();
@@ -26,4 +27,8 @@ var path = '/assets/db';
   await Hive.initFlutter(dbPath);
 
   await initDependencies();
+
+  Hive
+    ..registerAdapter(TaskAdapter())
+    ..registerAdapter(TasksAdapter());
 }
