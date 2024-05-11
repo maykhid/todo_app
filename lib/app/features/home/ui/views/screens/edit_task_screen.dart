@@ -47,9 +47,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         BlocProvider(
           create: (context) => EditTaskCubit(),
         ),
-        BlocProvider(
-          create: (context) => HomeCubit()..getAllTasks(),
-        ),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -58,6 +55,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               state.maybeMap(
                 loaded: (_) {
                   context.pop();
+                  context.read<HomeCubit>().getAllTasks(); // refresh task
                 },
                 error: (_) {
                   // show toast
@@ -66,16 +64,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               );
             },
           ),
-          // BlocListener<HomeCubit, HomeState>(
-          //   listener: (context, state) {
-          //     state.maybeMap(
-          //       loaded: (tasks) {
-          //         _taskController.text = tasks.tasks.tasks[index].title;
-          //       },
-          //       orElse: () {},
-          //     );
-          //   },
-          // ),
+      
         ],
         child: Scaffold(
           appBar: AppBar(
