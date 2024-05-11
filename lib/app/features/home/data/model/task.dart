@@ -7,6 +7,7 @@ class Tasks {
   Tasks({required this.tasks});
 
   factory Tasks.fromJson(List<Task> tasks) => Tasks(tasks: tasks);
+  
   @HiveField(0)
   List<Task> tasks;
 

@@ -27,6 +27,9 @@ class HiveTaskDao extends TaskDao {
   void writeTask(Task task) => _taskBox.add(task);
 
   @override
+  void updateTask(Task task, int index ) => _taskBox.putAt(index, task);
+
+  @override
   Tasks getAllTasks() => Tasks(tasks: _taskBox.values.toList());
 
   @override

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
+import 'package:toad_app/app/features/home/data/model/task.dart';
 import 'package:toad_app/app/features/home/ui/cubit/home_cubit.dart';
 import 'package:toad_app/app/shared/ui/app_colors.dart';
 import 'package:toad_app/app/shared/ui/app_images.dart';
@@ -52,49 +53,49 @@ class HomeScreen extends StatelessWidget {
           Icons.add,
         ),
       ),
-      body: BlocProvider(
-        create: (context) => HomeCubit()..getAllTasks(),
-        child: BlocBuilder<HomeCubit, HomeState>(
-          builder: (context, state) {
-            return Column(
-              children: [
-                const AdWidget(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: state.maybeMap(
-                    //error
-                    error: (message) => Message(message: message.errorMessage),
-
-                    // loaded
-                    loaded: (response) {
-                      final tasks = response.tasks.tasks;
-
-                      if (tasks.isEmpty) {
-                        return const Message(
-                          message:
-                              'You have no Tasks yet, click the FAB to add new tasks',
-                        );
-                      }
-
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) => const Padding(
-                          padding: EdgeInsets.only(top: 15),
-                          child: TaskTile(),
-                        ),
-                        // separatorBuilder: (context, index) => const Gap(10),
-                        itemCount: tasks.length,
+      body: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              const AdWidget(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: state.maybeMap(
+                  //error
+                  error: (message) => Message(message: message.errorMessage),
+      
+                  // loaded
+                  loaded: (response) {
+                    final tasks = response.tasks.tasks;
+      
+                    if (tasks.isEmpty) {
+                      return const Message(
+                        message:
+                            'You have no Tasks yet, click the FAB to add new tasks',
                       );
-                    },
-                    orElse: () {
-                      return Container();
-                    },
-                  ),
+                    }
+      
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: TaskTile(
+                          task: tasks[index],
+                          index: index,
+                        ),
+                      ),
+                      // separatorBuilder: (context, index) => const Gap(10),
+                      itemCount: tasks.length,
+                    );
+                  },
+                  orElse: () {
+                    return Container();
+                  },
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -120,8 +121,13 @@ class Message extends StatelessWidget {
 
 class TaskTile extends StatelessWidget {
   const TaskTile({
+    required this.task,
+    required this.index,
     super.key,
   });
+
+  final Task task;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -138,19 +144,22 @@ class TaskTile extends StatelessWidget {
           // checkbox
           RoundCheckBox(
             size: 32,
+            isChecked: task.isDone,
             onTap: (selected) {},
           ),
 
           const Gap(12),
 
           // text
-          const Text('Training at Gym'),
+          Text(task.title),
 
           const Spacer(),
 
           // edit btn
 
-          const EditButton(),
+          EditButton(
+            index: index,
+          ),
         ],
       ),
     );
@@ -159,13 +168,16 @@ class TaskTile extends StatelessWidget {
 
 class EditButton extends StatelessWidget {
   const EditButton({
+    required this.index,
     super.key,
   });
+
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.push('/editTask'),
+      onTap: () => context.push('/editTask', extra: index),
       child: Container(
         width: 51,
         height: 45,

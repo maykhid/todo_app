@@ -18,7 +18,12 @@ class AppRoutes {
     GoRoute(
       path: '/editTask',
       name: 'editTask',
-      builder: (context, state) => const EditTaskScreen(),
+      builder: (context, state) {
+        final info = state.extra! as EditTaskInfo;
+        return EditTaskScreen(
+          info: info,
+        );
+      },
     ),
   ];
 }

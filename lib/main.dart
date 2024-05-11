@@ -26,9 +26,9 @@ setup() async {
   final dbPath = join(path, '.db.hive');
   await Hive.initFlutter(dbPath);
 
-  await initDependencies();
-
   Hive
     ..registerAdapter(TaskAdapter())
     ..registerAdapter(TasksAdapter());
+
+  await initDependencies();
 }

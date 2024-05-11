@@ -36,6 +36,15 @@ class TaskRepository {
     }
   }
 
+  Result<void> updateTask(Task newTask, int taskIndex) {
+    try {
+      final task = _taskDao.updateTask(newTask, taskIndex);
+      return Result.success(task);
+    } catch (e) {
+      return Result.failure(errorMessage: e.toString());
+    }
+  }
+
   Result<void> writeTask(Task newTask) {
     try {
       final task = _taskDao.writeTask(newTask);
